@@ -8,7 +8,7 @@ require('dotenv').config();
 const apiPath = 'https://maps.googleapis.com/maps/api/geocode';
 
 // local paths
-const inPath = './data/input/sample_table.csv';
+const inPath = './data/input/in_table.csv';
 // const savePath = './data/output/out_table.json';
 const outPath = './data/output/out_table.csv';
 const logPath = './data/logs/download_log.csv';
