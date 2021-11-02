@@ -114,7 +114,7 @@ async function main() {
           const logLineArr = [i + index, inArray[i][0], response.status];
           fs.appendFileSync(logPath, `${logLineArr.join(';')}\n`);
           // print status
-          console.log(`${i + index} / ${inArray.length}:: ${response.status == 200 ? "OK" : "ERROR"}`);
+          console.log(`${i + index} / ${inArray.length - 1}:: ${response.status == 200 ? "OK" : "ERROR"}`);
 
           // prepare write row
           const newRow = inArray[i];
