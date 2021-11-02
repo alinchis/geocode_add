@@ -99,34 +99,39 @@ async function main() {
     // const downArray = [];
 
     // for each item in array get data from google api
-    for (let i = 1; i < inArray.length; i += 1) {
-      try {
-        // build request url
-        const getUrl = `${apiPath}/json?address=${inArray[i][1]},+CA&key=${process.env.API_KEY}`;
-        // send request
-        const response = await axios(getUrl);
+    const step = 30;
+    for (let i = 1; i < inArray.length; i += step) {
+      const batchArray = inArray.slice(i, i + step)
+      for (const item of batchArray) {
+        const index = batchArray.indexOf(item);
+        try {
+          // build request url
+          const getUrl = `${apiPath}/json?address=${inArray[i][1]},+CA&key=${process.env.API_KEY}`;
+          // send request
+          const response = await axios(getUrl);
 
-        // save log
-        const logLineArr = [i, inArray[i][0], response.status];
-        fs.appendFileSync(logPath, `${logLineArr.join(';')}\n`);
-        // print status
-        console.log(`${i} / ${inArray.length}:: ${response.status == 200 ? "OK" : "ERROR"}`);
+          // save log
+          const logLineArr = [i + index, inArray[i][0], response.status];
+          fs.appendFileSync(logPath, `${logLineArr.join(';')}\n`);
+          // print status
+          console.log(`${i + index} / ${inArray.length}:: ${response.status == 200 ? "OK" : "ERROR"}`);
 
-        // prepare write row
-        const newRow = inArray[i];
-        // if request is successful
-        if (response.status = 'OK' && response.data.results && response.data.results.length > 0) {
-          newRow.push(response.data.results[0].formatted_address);
-          newRow.push(response.data.results[0].geometry.location.lat);
-          newRow.push(response.data.results[0].geometry.location.lng);
-          newRow.push(response.data.results[0].place_id);
+          // prepare write row
+          const newRow = inArray[i];
+          // if request is successful
+          if (response.status = 'OK' && response.data.results && response.data.results.length > 0) {
+            newRow.push(response.data.results[0].formatted_address);
+            newRow.push(response.data.results[0].geometry.location.lat);
+            newRow.push(response.data.results[0].geometry.location.lng);
+            newRow.push(response.data.results[0].place_id);
+          }
+
+          // write response to file
+          fs.appendFileSync(outPath, `${newRow.join(';')}\n`);
+
+        } catch (e) {
+          console.log(e);
         }
-
-        // write response to file
-        fs.appendFileSync(outPath, `${newRow.join(';')}\n`);
-
-      } catch (e) {
-        console.log(e);
       }
 
     }
