@@ -1,5 +1,5 @@
 {
-  "name": "get_place",
+  "name": "geocode_add",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
   "author": "Alin CHIS",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.24.0",
     "dotenv": "^8.2.0",
     "fs-extra": "^9.0.0"
   }
