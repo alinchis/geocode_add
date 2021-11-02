@@ -5,12 +5,13 @@ const axios = require('axios');
 require('dotenv').config();
 
 // remote paths
-const apiPath = 'https://maps.googleapis.com/maps/api/place/findplacefromtext';
+const apiPath = 'https://maps.googleapis.com/maps/api/geocode';
 
 // local paths
-const inPath = './data/input/tabel_toalete_56569400_v2.csv';
-const savePath = './data/output/toalete_bucuresti.json';
-const outPath = './data/output/toalete_bucuresti.csv';
+const inPath = './data/input/sample_table.csv';
+// const savePath = './data/output/out_table.json';
+const outPath = './data/output/out_table.csv';
+const logPath = './data/logs/download_log.csv';
 
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -57,7 +58,8 @@ async function main() {
   // help text
   const helpText = `\n Available commands:\n\n\
   1. -h : display help text\n\
-  2. -p : call Google API for place data.\n`;
+  2. -p : call Google Geocode API for given list:\n\
+          './data/input/in_table.csv' (cell delimiter = ;, no text delimiter).\n`;
 
   // get command line arguments
   const arguments = process.argv;
@@ -79,37 +81,49 @@ async function main() {
   // 2. else if argument is 'e'
   } else if (mainArg === '-p') {
     // read input file
-    const inArray = readCSV(inPath, '#');
+    const inArray = readCSV(inPath, ';');
     // console.log(inArray);
     // test api key
     // console.log(`Google API key = ${process.env.API_KEY}`);
 
-    // start write array
-    const headerArr = [...inArray[0], 'api_formatted_address', 'api_lat', 'api_lng', 'api_name'];
+    // start output write array
+    const headerArr = [...inArray[0], 'api_formatted_address', 'api_lat', 'api_lng', 'place_id'];
     // console.log(headerArr);
-    fs.writeFileSync(outPath, `${headerArr.join('#')}\n`);
+    fs.writeFileSync(outPath, `${headerArr.join(';')}\n`);
+
+    // start downloads log file
+    const logHeaderArr = ['index', 'id', 'status_code']; // 200="OK"
+    fs.writeFileSync(logPath, `${logHeaderArr.join(';')}\n`);
 
     // prepare downloads array
-    const downArray = [];
+    // const downArray = [];
 
     // for each item in array get data from google api
     for (let i = 1; i < inArray.length; i += 1) {
       try {
-        const getUrl = `${apiPath}/json?input=${inArray[i][5]},Bucuresti,Romania&inputtype=textquery&fields=formatted_address,name,geometry&key=${process.env.API_KEY}`;
+        // build request url
+        const getUrl = `${apiPath}/json?address=${inArray[i][1]},+CA&key=${process.env.API_KEY}`;
+        // send request
         const response = await axios(getUrl);
-        console.log(`${i}:: ${response.status}`);
+
+        // save log
+        const logLineArr = [i, inArray[i][0], response.status];
+        fs.appendFileSync(logPath, `${logLineArr.join(';')}\n`);
+        // print status
+        console.log(`${i} / ${inArray.length}:: ${response.status == 200 ? "OK" : "ERROR"}`);
 
         // prepare write row
         const newRow = inArray[i];
-        if (response.status = 'OK' && response.data.candidates && response.data.candidates.length > 0) {
-          newRow.push(response.data.candidates[0].formatted_address);
-          newRow.push(response.data.candidates[0].geometry.location.lat);
-          newRow.push(response.data.candidates[0].geometry.location.lng);
-          newRow.push(response.data.candidates[0].name);
+        // if request is successful
+        if (response.status = 'OK' && response.data.results && response.data.results.length > 0) {
+          newRow.push(response.data.results[0].formatted_address);
+          newRow.push(response.data.results[0].geometry.location.lat);
+          newRow.push(response.data.results[0].geometry.location.lng);
+          newRow.push(response.data.results[0].place_id);
         }
 
         // write response to file
-        fs.appendFileSync(outPath, `${newRow.join('#')}\n`);
+        fs.appendFileSync(outPath, `${newRow.join(';')}\n`);
 
       } catch (e) {
         console.log(e);
