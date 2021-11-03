@@ -115,7 +115,7 @@ async function downloadData(newDownloadFlag) {
   // if it's a new download
   if(newDownloadFlag) {
     // init output file
-    const headerArr = [...inArray[0], 'api_formatted_address', 'api_lat', 'api_lng', 'place_id'];
+    const headerArr = ['id', 'geoaddress', 'api_formatted_address', 'api_lat', 'api_lng', 'place_id'];
     // console.log(headerArr);
     fs.writeFileSync(outPath, `${headerArr.join(';')}\n`);
 
@@ -140,7 +140,7 @@ async function downloadData(newDownloadFlag) {
   // for each item in array get data from google api
   const step = 30;
   const startIndex = downloadedItems.length;
-  console.log('startIndex: ', startIndex);
+  // console.log('startIndex: ', startIndex);
   for (let i = 0; i < workArray.length; i += step) {
 
     const batchArray = workArray.slice(i, i + step);
