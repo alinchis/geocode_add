@@ -101,7 +101,7 @@ async function geocodeAdd(inArray, i, startIndex, item, index) {
   }
 
   // sleep 1.5 sec
-  await sleep(1500);
+  // await sleep(1500);
 }
 
 
@@ -155,6 +155,9 @@ async function downloadData(newDownloadFlag) {
       geocodeAdd(inArray, i, startIndex, item, index);
 
     }
+
+    // sleep 1.5 sec
+    await sleep(1500);
   }
 }
 
