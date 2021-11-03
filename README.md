@@ -5,5 +5,5 @@ Geocode addresses using Google Geocoding API
 3. run `npm install` to install node packages
 4. copy &rename CSV input table into './data/input/in_table.csv' (cell delimiter = ;, no text delimiter).
 5. create `.env` file to store Google API user code (`API_KEY={user_api_code}`)
-6. run `node . -p` or `node index.js -p` to run program
+6. run `node . -d` or `node index.js -d` to start now download or run `node . -c` to continue a previous download.
 7. results are saved in CSV file: './data/output/out_table.csv' (cell delimiter = ;, no text delimiter). New columns are added ['api_formatted_address', 'api_lat', 'api_lng', 'place_id'].
